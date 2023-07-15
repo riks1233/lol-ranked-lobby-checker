@@ -49,7 +49,7 @@ def make_participants_request(port_and_token: Credentials):
         + "/chat/v5/participants/champ-select"
     )
     basic_auth = "riot:" + port_and_token.token
-    log(f"Making a request to url {url} with basic auth {basic_auth}")
+    # log_debug(f"Making a request to url {url} with basic auth {basic_auth}")
     headers = urllib3.make_headers(
         basic_auth=basic_auth,
         accept_encoding="application/json",
@@ -57,7 +57,7 @@ def make_participants_request(port_and_token: Credentials):
     )
     response = globals.http.request("GET", url, headers=headers)
     response_data = response.data.decode("utf-8")
-    log(f"Request to {url} was successful.")
+    # log_debug(f"Request to {url} was successful.")
     # log_debug("Printing received data ...")
     # log_debug(response_data)
     return response_data
