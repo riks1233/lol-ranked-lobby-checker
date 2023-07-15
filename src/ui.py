@@ -1,6 +1,7 @@
 from tkinter import *
 from threading import Thread
 from checker import run_check
+from logger import log
 
 
 class MainButton:
@@ -22,11 +23,15 @@ class MainButton:
         )
 
     def press_thread(self):
+        log("Checking ...")
         self.active_button.pack_forget()
         self.working_button.pack(expand=True, fill="both")
+
         self.command()
+
         self.working_button.pack_forget()
         self.active_button.pack(expand=True, fill="both")
+        log("Check completed.")
 
     def press(self):
         t = Thread(target=self.press_thread)

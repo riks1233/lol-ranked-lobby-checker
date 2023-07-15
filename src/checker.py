@@ -5,20 +5,13 @@ import globals
 import pythoncom
 import wmi
 
-from datetime import datetime
+from logger import log
 
 
-class PortAndToken:
+class Credentials:
     def __init__(self, port, token):
         self.port = port
         self.token = token
-
-
-def log(msg=""):
-    if msg == "":
-        print()
-    now = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-    print("[" + now + "]", msg)
 
 
 def log_league_client_process_launch_args(league_client_process_launch_args: str):
@@ -43,13 +36,15 @@ def extract_arg_value(str_to_parse: str, arg_name: str):
         return ""
 
 
-def make_participants_request(port_and_token: PortAndToken):
+def make_participants_request(port_and_token: Credentials):
     if port_and_token.port == "" or port_and_token.token == "":
         raise Exception(
             f'Either port or token of PortAndToken object is missing. [port: "{port_and_token.port}", token: "{port_and_token.token}"]'
         )
     url = (
-        "https://127.0.0.1:" + port_and_token.port + "/chat/v5/participants/champ-select"
+        "https://127.0.0.1:"
+        + port_and_token.port
+        + "/chat/v5/participants/champ-select"
     )
     basic_auth = "riot:" + port_and_token.token
     log(f"Will try to make request to url {url} with basic auth {basic_auth}")
@@ -60,15 +55,16 @@ def make_participants_request(port_and_token: PortAndToken):
     )
     response = globals.http.request("GET", url, headers=headers)
     response_data = response.data.decode("utf-8")
-    # log(f"Request to {url} was successful. Printing received data ...")
+    log(f"Request to {url} was successful.")
+    # log("Printing received data ...")
     # log(response_data)
     # log()
     return response_data
 
 
-def try_print_participants(port_and_token: PortAndToken, name: str):
+def try_print_participants(credentials: Credentials, name: str):
     try:
-        participants_json = make_participants_request(port_and_token)
+        participants_json = make_participants_request(credentials)
         participants = json.loads(participants_json)["participants"]
         if len(participants) == 0:
             log(
@@ -76,18 +72,18 @@ def try_print_participants(port_and_token: PortAndToken, name: str):
             )
             return False
         participant_names = []
-        log("Lobby participants:")
         for participant in participants:
             participant_name = participant["name"]
             participant_names.append(participant_name)
             log(participant_name)
-        log()
+        participant_names_joined = ",".join(participant_names)
+        log("Lobby participants:", participant_names_joined)
         # TODO: dynamic server selection?
-        opgg_url = "https://www.op.gg/multisearch/EUW?summoners=" + requests.utils.quote(
-            ",".join(participant_names)
+        opgg_url = (
+            "https://www.op.gg/multisearch/EUW?summoners="
+            + requests.utils.quote(participant_names_joined)
         )
-        log("OP.GG link")
-        log(opgg_url)
+        log("OP.GG link:", opgg_url)
         return True
     except Exception as e:
         log(f"Could not make request with {name} PortAndToken. {str(e)}")
@@ -115,6 +111,6 @@ def run_check():
     riot_token = extract_arg_value(
         league_client_process_launch_args, "--riotclient-auth-token"
     )
-    riot = PortAndToken(riot_port, riot_token)
+    credentials = Credentials(riot_port, riot_token)
 
-    try_print_participants(riot, "Riot")
+    try_print_participants(credentials)
