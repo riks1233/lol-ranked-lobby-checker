@@ -124,7 +124,7 @@ def run_check():
         if process.Name.lower() == league_client_process_name.lower():
             league_client_process_launch_args = process.CommandLine
     if league_client_process_launch_args == "":
-        log_error(f"Failed to find process with name {league_client_process_name}")
+        log_error(f"Failed to find process with name {league_client_process_name}. Is League client running?")
         return
 
     # log_debug_league_client_process_launch_args(league_client_process_launch_args)

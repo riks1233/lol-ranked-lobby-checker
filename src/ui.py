@@ -1,4 +1,5 @@
 from tkinter import *
+import tkinter.font as font
 from threading import Thread
 from checker import run_check
 from logger import log
@@ -8,8 +9,10 @@ class MainButton:
     def __init__(self, root, command):
         self.root = root
         self.command = command
+        self.font = font.Font(size=14)
         self.active_button = Button(
             root,
+            font=self.font,
             text="Check ranked lobby",
             activebackground="lime green",
             background="lime green",
@@ -18,6 +21,7 @@ class MainButton:
         self.active_button.pack(expand=True, fill="both")
         self.working_button = Button(
             root,
+            font=self.font,
             text="Checking ...",
             state="disabled",
         )
