@@ -4,8 +4,10 @@ import json
 import globals
 import pythoncom
 import wmi
+import os
+import inspect
 
-from logger import log
+from logger import *
 
 
 class Credentials:
@@ -14,8 +16,8 @@ class Credentials:
         self.token = token
 
 
-def log_league_client_process_launch_args(league_client_process_launch_args: str):
-    log(
+def log_debug_league_client_process_launch_args(league_client_process_launch_args: str):
+    log_debug(
         f"""
 ### Start of process launch args
 {league_client_process_launch_args}
@@ -32,7 +34,7 @@ def extract_arg_value(str_to_parse: str, arg_name: str):
     try:
         return str_to_parse.split(arg_name)[1].split('"')[0]
     except:
-        log(f'Could not extract arg value "{arg_name}". Potentially not present.')
+        log_error(f'Could not extract arg value "{arg_name}". Potentially not present.')
         return ""
 
 
@@ -56,18 +58,24 @@ def make_participants_request(port_and_token: Credentials):
     response = globals.http.request("GET", url, headers=headers)
     response_data = response.data.decode("utf-8")
     log(f"Request to {url} was successful.")
-    # log("Printing received data ...")
-    # log(response_data)
-    # log()
+    # log_debug("Printing received data ...")
+    # log_debug(response_data)
     return response_data
 
 
-def try_print_participants(credentials: Credentials, name: str):
+def try_print_participants(credentials: Credentials):
+    participants_json = ""
     try:
         participants_json = make_participants_request(credentials)
+    except Exception as e:
+        log_error(f"Could not make request.", e)
+        return False
+
+    participant_names_joined = ""
+    try:
         participants = json.loads(participants_json)["participants"]
         if len(participants) == 0:
-            log(
+            log_error(
                 "Participant list is empty. Supposedly the script was executed too early."
             )
             return False
@@ -78,16 +86,32 @@ def try_print_participants(credentials: Credentials, name: str):
             log(participant_name)
         participant_names_joined = ",".join(participant_names)
         log("Lobby participants:", participant_names_joined)
-        # TODO: dynamic server selection?
-        opgg_url = (
-            "https://www.op.gg/multisearch/EUW?summoners="
-            + requests.utils.quote(participant_names_joined)
-        )
-        log("OP.GG link:", opgg_url)
-        return True
     except Exception as e:
-        log(f"Could not make request with {name} PortAndToken. {str(e)}")
-    return False
+        log_error(
+            f"Could not parse participants request JSON or extract participant names from it.",
+            e,
+        )
+        return False
+
+    server = "EUW"
+    try:
+        config_file_path = os.path.join(
+            os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))),
+            "config.json",
+        )
+        with open(config_file_path, "r") as config_file:
+            config_data = json.load(config_file)
+            server = config_data["server"]
+            # log_debug(server)
+    except Exception as e:
+        log_warning(f"Could not parse config JSON. Using default values.", e)
+
+    opgg_url = (
+        f"https://www.op.gg/multisearch/{server}?summoners="
+        + requests.utils.quote(participant_names_joined)
+    )
+    log("OP.GG link:", opgg_url)
+    return True
 
 
 def run_check():
@@ -100,10 +124,10 @@ def run_check():
         if process.Name.lower() == league_client_process_name.lower():
             league_client_process_launch_args = process.CommandLine
     if league_client_process_launch_args == "":
-        log(f"Failed to find process with name {league_client_process_name}")
+        log_error(f"Failed to find process with name {league_client_process_name}")
         return
 
-    # log_league_client_process_launch_args(league_client_process_launch_args)
+    # log_debug_league_client_process_launch_args(league_client_process_launch_args)
 
     riot_port = extract_arg_value(
         league_client_process_launch_args, "--riotclient-app-port"

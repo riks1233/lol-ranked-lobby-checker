@@ -12,6 +12,7 @@ League of legends ranked lobby participants checker / revealer / inspector. Runn
 - Create a python virtual environment in project root by running `python -m venv venv`.
 - Activate the newly created venv (you should see `(venv)` prefix in your terminal) with `. venv/Scripts/activate`
 - Install requirements into the launched venv from `requirements.txt` file by running `python -m pip install -r requirements.txt`
+- Create `src/config.json` file by copying `src/config.template.json` file. Modify `src/config.json` according to your needs.
 
 # How to run
 

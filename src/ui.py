@@ -38,17 +38,25 @@ class MainButton:
         t.start()
 
 
-def init():
+def ui_main():
     root = Tk()
     width = 400
     height = 200
     root.geometry(str(width) + "x" + str(height))
-
-    # Providing title to the form
     title = "League of legends ranked lobby checker"
     root.title(title)
 
     main_button = MainButton(root, run_check)
-
-    # this will run the mainloop (code below does not execute until the window is shut down).
+    # This will run the mainloop
+    # (if it wasn't in a separate thread the code below would not execute until the window is shut down).
     root.mainloop()
+
+
+def init():
+    # [IMPORTANT]: Someone said that tkinter is considered as non-thread-safe.
+    # https://stackoverflow.com/questions/44637473/python3-tkinter-display-message-after-process-completion
+    # Hence, if there would be problems, remove the threading for the UI and remove any code
+    # that is supposed to run after the ui.init().
+    # (For example, a message saying "Initialized successfully.")
+    t = Thread(target=ui_main)
+    t.start()
