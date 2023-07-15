@@ -7,9 +7,13 @@ League of legends ranked lobby participants checker / revealer / inspector. Runn
 
 ![](./res/preview.png)
 
+### Is this bannable?
+
+Not sure, but potentially yes. On button press, the program makes a single HTTP request to a running league of legends client, using its exposed API endpoint, which was gathered through logs. I don't know if they use some internal logging and stricly look for the sequence and amount of HTTP requests. Realistically, they don't. And if you make 1 more http request to the client per lobby, I would like to believe that it should be fine.
+
 # Disclaimer
 
-I do not take any responsibility of usage of this program by other individuals or companies for anything, including League of legends account bans.
+Having said all that, I do not take any responsibility of usage of this program by other individuals or companies for anything, including League of legends account bans.
 
 # How to setup
 
