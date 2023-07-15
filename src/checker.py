@@ -21,38 +21,37 @@ def log(msg=""):
     print("[" + now + "]", msg)
 
 
-def log_league_client_process_launch_args(leagueClientProcessLaunchArgs: str):
+def log_league_client_process_launch_args(league_client_process_launch_args: str):
     log(
         f"""
 ### Start of process launch args
-{leagueClientProcessLaunchArgs}
+{league_client_process_launch_args}
 ### End of process launch args\n
 """
     )
 
 
-def extract_arg_value(strToParse: str, argName: str):
-    argName += "="
+def extract_arg_value(str_to_parse: str, arg_name: str):
+    arg_name += "="
     # 1. Divide by arg and take the remaining string after the arg
     # 2. Divide by quote, and first quote must indicate an ending of our arg value.
     # Take the first part, which should be our arg's value.
     try:
-        return strToParse.split(argName)[1].split('"')[0]
+        return str_to_parse.split(arg_name)[1].split('"')[0]
     except:
-        log(f'Could not extract arg value "{argName}". Potentially not present.')
+        log(f'Could not extract arg value "{arg_name}". Potentially not present.')
         return ""
 
 
-def makeParticipantsRequest(portAndToken: PortAndToken):
-    if portAndToken.port == "" or portAndToken.token == "":
+def make_participants_request(port_and_token: PortAndToken):
+    if port_and_token.port == "" or port_and_token.token == "":
         raise Exception(
-            f'Either port or token of PortAndToken object is missing. [port: "{portAndToken.port}", token: "{portAndToken.token}"]'
+            f'Either port or token of PortAndToken object is missing. [port: "{port_and_token.port}", token: "{port_and_token.token}"]'
         )
     url = (
-        "https://127.0.0.1:" + portAndToken.port + "/chat/v5/participants/champ-select"
+        "https://127.0.0.1:" + port_and_token.port + "/chat/v5/participants/champ-select"
     )
-    # basic_auth = convertTokenToRiotBasicAuthValue(portAndToken.token)
-    basic_auth = "riot:" + portAndToken.token
+    basic_auth = "riot:" + port_and_token.token
     log(f"Will try to make request to url {url} with basic auth {basic_auth}")
     headers = urllib3.make_headers(
         basic_auth=basic_auth,
@@ -61,34 +60,34 @@ def makeParticipantsRequest(portAndToken: PortAndToken):
     )
     response = globals.http.request("GET", url, headers=headers)
     response_data = response.data.decode("utf-8")
-    log(f"Request to {url} was successful. Printing received data ...")
-    log(response_data)
-    log()
+    # log(f"Request to {url} was successful. Printing received data ...")
+    # log(response_data)
+    # log()
     return response_data
 
 
-def tryPrintParticipants(portAndToken: PortAndToken, name: str):
+def try_print_participants(port_and_token: PortAndToken, name: str):
     try:
-        participantsJson = makeParticipantsRequest(portAndToken)
-        participants = json.loads(participantsJson)["participants"]
+        participants_json = make_participants_request(port_and_token)
+        participants = json.loads(participants_json)["participants"]
         if len(participants) == 0:
             log(
                 "Participant list is empty. Supposedly the script was executed too early."
             )
             return False
-        participantNames = []
+        participant_names = []
         log("Lobby participants:")
         for participant in participants:
-            participantName = participant["name"]
-            participantNames.append(participantName)
-            log(participantName)
+            participant_name = participant["name"]
+            participant_names.append(participant_name)
+            log(participant_name)
         log()
         # TODO: dynamic server selection?
-        opggUrl = "https://www.op.gg/multisearch/EUW?summoners=" + requests.utils.quote(
-            ",".join(participantNames)
+        opgg_url = "https://www.op.gg/multisearch/EUW?summoners=" + requests.utils.quote(
+            ",".join(participant_names)
         )
         log("OP.GG link")
-        log(opggUrl)
+        log(opgg_url)
         return True
     except Exception as e:
         log(f"Could not make request with {name} PortAndToken. {str(e)}")
@@ -116,15 +115,6 @@ def run_check():
     riot_token = extract_arg_value(
         league_client_process_launch_args, "--riotclient-auth-token"
     )
-    remotingPort = extract_arg_value(
-        league_client_process_launch_args, "--app-port"
-    )
-    remotingToken = extract_arg_value(
-        league_client_process_launch_args, "--remoting-auth-token"
-    )
-    Riot = PortAndToken(riot_port, riot_token)
-    Remoting = PortAndToken(remotingPort, remotingToken)
+    riot = PortAndToken(riot_port, riot_token)
 
-    printSuccessful = tryPrintParticipants(Riot, "Riot")
-    if not printSuccessful:
-        tryPrintParticipants(Remoting, "Remoting")
+    try_print_participants(riot, "Riot")
