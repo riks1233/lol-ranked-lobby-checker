@@ -83,9 +83,8 @@ def try_print_participants(credentials: Credentials):
         for participant in participants:
             participant_name = participant["name"]
             participant_names.append(participant_name)
-            log(participant_name)
         participant_names_joined = ",".join(participant_names)
-        log("Lobby participants:", participant_names_joined)
+        log(f"Lobby participants: {participant_names_joined}")
     except Exception as e:
         log_error(
             f"Could not parse participants request JSON or extract participant names from it.",
@@ -110,7 +109,7 @@ def try_print_participants(credentials: Credentials):
         f"https://www.op.gg/multisearch/{server}?summoners="
         + requests.utils.quote(participant_names_joined)
     )
-    log("OP.GG link:", opgg_url)
+    log(f"OP.GG link: {opgg_url}")
     return True
 
 

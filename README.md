@@ -7,6 +7,10 @@ League of legends ranked lobby participants checker / revealer / inspector. Runn
 
 ![](./res/preview.png)
 
+# Disclaimer
+
+I do not take any responsibility of usage of this program by other individuals or companies for anything, including League of legends account bans.
+
 # How to setup
 
 - You need to have python3 installed (preferably version 3.11, which this was last tested with).
