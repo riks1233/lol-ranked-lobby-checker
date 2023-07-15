@@ -49,7 +49,7 @@ def make_participants_request(port_and_token: Credentials):
         + "/chat/v5/participants/champ-select"
     )
     basic_auth = "riot:" + port_and_token.token
-    log(f"Will try to make request to url {url} with basic auth {basic_auth}")
+    log(f"Making a request to url {url} with basic auth {basic_auth}")
     headers = urllib3.make_headers(
         basic_auth=basic_auth,
         accept_encoding="application/json",
@@ -76,7 +76,7 @@ def try_print_participants(credentials: Credentials):
         participants = json.loads(participants_json)["participants"]
         if len(participants) == 0:
             log_error(
-                "Participant list is empty. Supposedly the script was executed too early."
+                "Participant list is empty. Supposedly the script was executed too early or you are not in a lobby."
             )
             return False
         participant_names = []

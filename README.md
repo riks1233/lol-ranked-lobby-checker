@@ -10,14 +10,21 @@ League of legends ranked lobby participants checker / revealer / inspector. Runn
 
 - You need to have python3 installed (preferably version 3.11, which this was last tested with).
 - Create a python virtual environment in project root by running `python -m venv venv`.
-- Activate the newly created venv (you should see `(venv)` prefix in your terminal) with `. venv/Scripts/activate`
+- Activate the newly created venv (you should see `(venv)` prefix in your terminal after activation) with `. venv/Scripts/activate`
 - Install requirements into the launched venv from `requirements.txt` file by running `python -m pip install -r requirements.txt`
 - Create `src/config.json` file by copying `src/config.template.json` file. Modify `src/config.json` according to your needs.
 
 # How to run
 
-- Activate the newly created venv (you should see `(venv)` prefix in your terminal) with `. venv/Scripts/activate`
-- Run the program when you have joined a ranked lobby with `python src/main.py`. **Make sure you are doing this with an activated venv.**
+**Make sure you are clicking the button when you have found a match and are in a lobby with unknown people.**
+## User-friendly
+
+Run `bin/lol-ranked-lobby-checker.bat` (or `.ps1`) by double clicking it in Windows Explorer.
+
+## Programmer-friendly
+
+- Activate the venv (you should see `(venv)` prefix in your terminal after activation) with `. venv/Scripts/activate`
+- Run the program with `python src/main.py`.
 
 # Other notes
 
