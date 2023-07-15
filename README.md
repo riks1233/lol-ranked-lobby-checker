@@ -25,7 +25,8 @@ Not sure, but potentially yes. On button press, the program makes a single HTTP 
 
 # How to run
 
-**Make sure you are clicking the button when you have found a ranked match and are in a lobby with unknown people.**
+- You need to have done the [setup section](#how-to-setup) steps.
+- Make sure you are clicking the button when you have found a ranked match and are in a lobby with unknown people.
 ## User-friendly
 
 Run `bin/lol-ranked-lobby-checker.bat` (or `.ps1`) by double clicking it in Windows Explorer. Or right click the file and you should see a Run option in the context menu.
